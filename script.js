@@ -33,21 +33,88 @@ var scaleHors = d3.scale.linear()
                         .range([0, 2 * pi]);
 
 
-//set svg
+//set svg/clockface
 var width = 400;
 var height = 200;
-var svg = d3.selectAll(".chart")
-            .append("svg:svg")
+var svg = d3.selectAll("body")
+            .append("svg")
             .attr("width", width)
             .attr("height", height);
-var clockSet = svg.append("svg:g") 
+var clockFace = svg.append("g") 
                   .attr("transform", "translate(" + offSetX + "," + offSetY + ")"); 
-clockSet.append("svg:circle")
+clockFace.append("circle")
         .attr("r", 80)
         .attr("fill", "none")
         .attr("stroke", "black")
         .attr("stroke-width", 2);
-clockSet.append("svg:circle")
+clockFace.append("circle")
         .attr("r", 4)
         .attr("fill", "black")
-        .attr("class", "clock innercircle");
+        .attr("class", "clock innercircle")
+
+//clockhands
+var render = function(data) {
+  clockFace.selectAll(".clockhand").remove();
+  var secArc = d3.svg.arc()
+                    .innerRadius(0)
+                    .outerRadius(70)
+                    .startAngle(function(d) {
+                      return scaleSecs(d.numeric);
+                    })
+                    .endAngle(function(d) {
+                      return scaleSecs(d.numeric)
+                    });
+  var minArc = d3.svg.arc()
+                    .innerRadius(0)
+                    .outerRadius(60)
+                    .startAngle(function(d) {
+                      return scaleMins(d.numeric);
+                    })
+                    .endAngle(function(d) {
+                      return scaleMins(d.numeric)
+                    });
+  var horArc = d3.svg.arc()
+                    .innerRadius(0)
+                    .outerRadius(50)
+                    .startAngle(function(d) {
+                      return scaleHors(d.numeric % 12);
+                    })
+                    .endAngle(function(d) {
+                      return scaleHors(d.numeric % 12)
+                    });
+  clockFace.selectAll(".clockhand")
+           .data(data)
+           .enter()
+           .append("svg:path")
+           .attr("d", function(d) {
+            if (d.unit === "seconds") {
+              return secArc(d);
+            }
+            else if (d.unit === "minutes") {
+              return minArc(d);
+            }
+            else if (d.unit === "hours") {
+              return horArc(d);
+            }
+           })
+           .attr("class", "clockhand")
+           .attr("stroke", "black")
+           .attr("stroke-width", function(d) {
+            if (d.unit === "seconds") {
+              return 2;
+            }
+            else if (d.unit === "minutes") {
+              return 3;
+            }
+            else if (d.unit === "hours") {
+              return 4;
+            }
+           })
+           .attr("fill", "none");
+};
+
+setInterval(function() {
+  var data;
+  data = fields();
+  return render(data);
+}, 1000);
