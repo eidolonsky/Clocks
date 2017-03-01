@@ -1,4 +1,4 @@
-var clockD3 = function(TZhr, faceColor, handColor) {  
+var clockD3 = function(TZhr, faceColor, handColor, city) {  
   //get time
   var fields = function() {
     var currentTime = new Date();
@@ -20,7 +20,7 @@ var clockD3 = function(TZhr, faceColor, handColor) {
   };
 
   //set scale
-  var offSetX = 100;
+  var offSetX = 90;
   var offSetY = 100;
   var pi = Math.PI;
   var scaleSecs = d3.scale.linear()
@@ -35,8 +35,8 @@ var clockD3 = function(TZhr, faceColor, handColor) {
 
 
   //set svg/clockface
-  var width = 200;
-  var height = 200;
+  var width = 180;
+  var height = 220;
   var svg = d3.selectAll("body")
               .append("svg")
               .attr("width", width)
@@ -114,12 +114,19 @@ var clockD3 = function(TZhr, faceColor, handColor) {
              .attr("fill", "none");
   };
 
+//set clock name(city)
+  var clockName = svg.append("text")
+                    .attr("x", 90)
+                    .attr("y", 210)
+                    .attr("text-anchor", "middle")
+                    .text(city)
+
+//set interval
   setInterval(function() {
     var data;
     data = fields();
     return render(data);
   }, 1000);
-
 };
-clockD3(5, "white", "black"); 
-clockD3(0, "black", "white"); 
+clockD3(14, "white", "black", "Shanghai"); 
+clockD3(0, "black", "white", "Chicago"); 
